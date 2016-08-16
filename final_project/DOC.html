@@ -952,6 +952,70 @@ As Naive Bayes doesn't depends upon distances, so no feature scaling is required
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To find effect of our new feature, we find best score without our new features</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="c"># remove 2 new features</span>
+<span class="n">features_list</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s">&quot;fraction_from_poi&quot;</span><span class="p">)</span>
+<span class="n">features_list</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s">&quot;fraction_to_poi&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">GaussianNB</span>
+
+<span class="n">kbest</span> <span class="o">=</span> <span class="n">SelectKBest</span><span class="p">()</span>
+<span class="n">clf_nb</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
+<span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s">&#39;kbest&#39;</span><span class="p">,</span> <span class="n">kbest</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;clf_nb&#39;</span><span class="p">,</span> <span class="n">clf_nb</span><span class="p">)])</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;kbest__k&#39;</span><span class="p">:</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">15</span><span class="p">)}</span>
+<span class="n">folder</span> <span class="o">=</span> <span class="n">StratifiedShuffleSplit</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">n_iter</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span><span class="p">)</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">pipe</span><span class="p">,</span> <span class="n">param_grid</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">cv</span> <span class="o">=</span> <span class="n">folder</span><span class="p">,</span> <span class="n">scoring</span> <span class="o">=</span> <span class="s">&#39;f1&#39;</span><span class="p">)</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+<span class="n">clf</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">best_estimator_</span>
+<span class="n">test_classifier</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">my_dataset</span><span class="p">,</span> <span class="n">features_list</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Pipeline(steps=[(&apos;kbest&apos;, SelectKBest(k=6, score_func=&lt;function f_classif at 0x000000001951A438&gt;)), (&apos;clf_nb&apos;, GaussianNB())])
+	Accuracy: 0.84600	Precision: 0.40264	Recall: 0.32050	F1: 0.35690	F2: 0.33413
+	Total predictions: 15000	True positives:  641	False positives:  951	False negatives: 1359	True negatives: 12049
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can see that Precision score is decreased to 0.40 from 0.42 and Recall is decreases to 0.32 from 0.35 without our new features confirming usefulness of our new feature.</p>
+
+</div>
+</div>
+</div>
     </div>
   </div>
 </body>
