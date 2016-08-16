@@ -682,7 +682,7 @@ To mitigate this problem, We create 2 new features</p>
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Pipeline(steps=[(&apos;kbest&apos;, SelectKBest(k=5, score_func=&lt;function f_classif at 0x000000001946F978&gt;)), (&apos;clf_dt&apos;, DecisionTreeClassifier(class_weight=None, criterion=&apos;gini&apos;, max_depth=5,
+<pre>Pipeline(steps=[(&apos;kbest&apos;, SelectKBest(k=5, score_func=&lt;function f_classif at 0x000000001951A438&gt;)), (&apos;clf_dt&apos;, DecisionTreeClassifier(class_weight=None, criterion=&apos;gini&apos;, max_depth=5,
             max_features=None, max_leaf_nodes=None, min_samples_leaf=3,
             min_samples_split=2, min_weight_fraction_leaf=0.0,
             presort=False, random_state=42, splitter=&apos;best&apos;))])
@@ -734,12 +734,14 @@ This is just the ratio of correctly identified categories to total number of per
 Precision is ratio of correctly identified True positive to Total Positive predictions i.e.<br>
 precision = True Positive(TP)/[True Positive(TP) + False Positive(FP)]  </li>
 </ul>
+<p>In this experiment, precision refers to fraction of person of interest correctly identified out of total identified persons of interest. If we have low precision, we are incorrectly incriminating lots of false person of interest.</p>
 <p>We are getting moderate score of precision of 0.28 due to large numbers of False Positives (FP) with count of 1117.</p>
 <ul>
-<li>RECALL
+<li>RECALL<br>
 Recall is measure of selecting maximum number of positive samples out of total positives. i.e.<br>
 recall = True Positive(TP)/[True Positive(TP) + False Negative(FN)]  </li>
 </ul>
+<p>In this experiment, recall refers to fraction of person of interest found out of total person of interests. If we have low recall, we are missing out lots of true person of interest.</p>
 <p>We are getting very low quantity of recall (0.218) due to high numbers of false negatives (1564).</p>
 <p>We would try other algoritm K-Nearest Neighbour(KNN) to improve our score.</p>
 
@@ -775,7 +777,7 @@ recall = True Positive(TP)/[True Positive(TP) + False Negative(FN)]  </li>
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Pipeline(steps=[(&apos;scaler&apos;, MinMaxScaler(copy=True, feature_range=(0, 1))), (&apos;kbest&apos;, SelectKBest(k=5, score_func=&lt;function f_classif at 0x000000001946F978&gt;)), (&apos;clf_knn&apos;, KNeighborsClassifier(algorithm=&apos;auto&apos;, leaf_size=30, metric=&apos;minkowski&apos;,
+<pre>Pipeline(steps=[(&apos;scaler&apos;, MinMaxScaler(copy=True, feature_range=(0, 1))), (&apos;kbest&apos;, SelectKBest(k=5, score_func=&lt;function f_classif at 0x000000001951A438&gt;)), (&apos;clf_knn&apos;, KNeighborsClassifier(algorithm=&apos;auto&apos;, leaf_size=30, metric=&apos;minkowski&apos;,
            metric_params=None, n_jobs=1, n_neighbors=3, p=2,
            weights=&apos;uniform&apos;))])
 	Accuracy: 0.82940	Precision: 0.26050	Recall: 0.15200	F1: 0.19198	F2: 0.16581
@@ -829,7 +831,7 @@ Following the description of evaluation metrics in Decision Tree, we see that pr
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Pipeline(steps=[(&apos;kbest&apos;, SelectKBest(k=6, score_func=&lt;function f_classif at 0x000000001946F978&gt;)), (&apos;clf_nb&apos;, GaussianNB())])
+<pre>Pipeline(steps=[(&apos;kbest&apos;, SelectKBest(k=6, score_func=&lt;function f_classif at 0x000000001951A438&gt;)), (&apos;clf_nb&apos;, GaussianNB())])
 	Accuracy: 0.85073	Precision: 0.42788	Recall: 0.35450	F1: 0.38775	F2: 0.36709
 	Total predictions: 15000	True positives:  709	False positives:  948	False negatives: 1291	True negatives: 12052
 
@@ -892,6 +894,58 @@ As Naive Bayes doesn't depends upon distances, so no feature scaling is required
  mean: 0.28962, std: 0.27850, params: {&apos;kbest__k&apos;: 14}]</pre>
 </div>
 
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can see in above summay that score is highest corresponding to 6 feature selected by k-best.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As selector is being passed in grid estimator, we explicitly find approximate features for k=6. In below results, we see that newly added feature 'fraction_to_poi' is one of feature selected for predicting final outcome.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">kbest_exp</span> <span class="o">=</span> <span class="n">SelectKBest</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">kbest_exp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+<span class="n">features_selected</span> <span class="o">=</span> <span class="p">[</span><span class="n">features_list</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">kbest_exp</span><span class="o">.</span><span class="n">get_support</span><span class="p">(</span><span class="n">indices</span><span class="o">=</span><span class="bp">True</span><span class="p">)]</span>
+<span class="k">print</span> <span class="s">&#39;features selected by kbest&#39;</span>
+<span class="k">print</span> <span class="n">features_selected</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>features selected by kbest
+[&apos;salary&apos;, &apos;bonus&apos;, &apos;total_stock_value&apos;, &apos;exercised_stock_options&apos;, &apos;deferred_income&apos;, &apos;fraction_to_poi&apos;]
+</pre>
+</div>
 </div>
 
 </div>
